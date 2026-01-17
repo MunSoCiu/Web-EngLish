@@ -1,0 +1,40 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: english_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: 123456
+      POSTGRES_DB: english_learning
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  backend:
+    container_name: english_backend
+    build:
+      context: ./backend
+    restart: always
+    env_file:
+      - ./backend/.env
+    ports:
+      - "3002:3000"
+    depends_on:
+      - postgres
+
+  frontend:
+    container_name: english_frontend
+    build:
+      context: ./frontend
+    restart: always
+    ports:
+      - "3003:3000"
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
